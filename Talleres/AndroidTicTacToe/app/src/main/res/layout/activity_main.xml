@@ -2,17 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <LinearLayout
         android:id="@+id/game_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_navigation"
-        android:layout_marginBottom="210dp"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="157dp"
+        android:layout_marginBottom="-157dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
+        <!-- El android:layout_marginBottom="210dp" original fue eliminado
+             ya que ahora el layout se maneja con layout_above y layout_below.
+             Si se necesita un margen específico, se puede reajustar. -->
 
         <TableLayout
             android:id="@+id/play_grid"
@@ -26,18 +39,21 @@
                     android:id="@+id/button_1"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_1_description"
                     android:textSize="36sp" />
 
                 <Button
                     android:id="@+id/button_2"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_2_description"
                     android:textSize="36sp" />
 
                 <Button
                     android:id="@+id/button_3"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_3_description"
                     android:textSize="36sp" />
             </TableRow>
 
@@ -47,18 +63,21 @@
                     android:id="@+id/button_4"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_4_description"
                     android:textSize="36sp" />
 
                 <Button
                     android:id="@+id/button_5"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_5_description"
                     android:textSize="36sp" />
 
                 <Button
                     android:id="@+id/button_6"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_6_description"
                     android:textSize="36sp" />
             </TableRow>
 
@@ -68,18 +87,21 @@
                     android:id="@+id/button_7"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_7_description"
                     android:textSize="36sp" />
 
                 <Button
                     android:id="@+id/button_8"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_8_description"
                     android:textSize="36sp" />
 
                 <Button
                     android:id="@+id/button_9"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
+                    android:contentDescription="@string/cell_9_description"
                     android:textSize="36sp" />
             </TableRow>
 
@@ -91,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
-            android:text="info"
+            android:text="@string/information_text"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -101,6 +123,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu" />
-
 
 </RelativeLayout>

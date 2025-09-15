@@ -1,11 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_new_game"
+        android:icon="@drawable/ic_baseline_replay_24"
         android:title="@string/menu_new_game" />
     <item
         android:id="@+id/action_difficulty"
+        android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/menu_difficulty" />
     <item
         android:id="@+id/action_quit"
+        android:icon="@drawable/ic_baseline_exit_to_app_24"
         android:title="@string/menu_quit" />
 </menu>

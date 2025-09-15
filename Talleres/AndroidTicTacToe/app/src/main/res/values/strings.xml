@@ -28,5 +28,17 @@
     <!-- About dialog -->
     <string name="about_text">Tic-Tac-Toe
 Programmed by: Danny Yaluzan</string>
+    <string name="about_dialog_title">About</string>
     <string name="information_text">info</string>
+
+    <!-- Content descriptions for game board cells -->
+    <string name="cell_1_description">Casilla 1</string>
+    <string name="cell_2_description">Casilla 2</string>
+    <string name="cell_3_description">Casilla 3</string>
+    <string name="cell_4_description">Casilla 4</string>
+    <string name="cell_5_description">Casilla 5</string>
+    <string name="cell_6_description">Casilla 6</string>
+    <string name="cell_7_description">Casilla 7</string>
+    <string name="cell_8_description">Casilla 8</string>
+    <string name="cell_9_description">Casilla 9</string>
 </resources>

@@ -4,14 +4,14 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
-// import android.view.Menu // Removed
-// import android.view.MenuInflater // Removed
-// import android.view.MenuItem // Removed
+import android.view.Menu // Added
+import android.view.MenuItem // Added
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar // Added
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class AndroidTicTacToeActivity : AppCompatActivity() {
@@ -25,11 +25,16 @@ class AndroidTicTacToeActivity : AppCompatActivity() {
     companion object {
         const val DIALOG_DIFFICULTY_ID = 0
         const val DIALOG_QUIT_ID = 1
+        const val DIALOG_ABOUT_ID = 2 // Added
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Set up the toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         mBoardButtons = Array(TicTacToeGame.BOARD_SIZE) { i ->
             val id = resources.getIdentifier("button_${i + 1}", "id", packageName)
@@ -47,10 +52,12 @@ class AndroidTicTacToeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_difficulty -> {
+                    @Suppress("DEPRECATION")
                     showDialog(DIALOG_DIFFICULTY_ID)
                     true
                 }
                 R.id.action_quit -> {
+                    @Suppress("DEPRECATION")
                     showDialog(DIALOG_QUIT_ID)
                     true
                 }
@@ -115,7 +122,27 @@ class AndroidTicTacToeActivity : AppCompatActivity() {
         else btn.setTextColor(android.graphics.Color.rgb(200, 0, 0))
     }
 
-    // Dialog creation (aligned with tutorial; showDialog calls this method)
+    // --- Menu Options ---
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        val inflater = menuInflater
+        inflater.inflate(R.menu.options_menu, menu) // Ensure options_menu.xml is created
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_about -> {
+                @Suppress("DEPRECATION")
+                showDialog(DIALOG_ABOUT_ID)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    // --- Dialog Creation ---
+    @Deprecated("Deprecated in Java")
     override fun onCreateDialog(id: Int): Dialog {
         var dialog: Dialog? = null
         val builder = AlertDialog.Builder(this)
@@ -123,22 +150,17 @@ class AndroidTicTacToeActivity : AppCompatActivity() {
         when (id) {
             DIALOG_DIFFICULTY_ID -> {
                 builder.setTitle(R.string.difficulty_choose)
-
                 val levels = arrayOf(
                     getString(R.string.difficulty_easy),
                     getString(R.string.difficulty_harder),
                     getString(R.string.difficulty_expert)
                 )
-
-                // selected index depends on current game difficulty
                 val selected = when (mGame.getDifficultyLevel()) {
                     TicTacToeGame.DifficultyLevel.Easy -> 0
                     TicTacToeGame.DifficultyLevel.Harder -> 1
                     TicTacToeGame.DifficultyLevel.Expert -> 2
                 }
-
                 builder.setSingleChoiceItems(levels, selected) { dialogInterface, which ->
-                    // Set the difficulty on selection
                     val chosen = when (which) {
                         0 -> TicTacToeGame.DifficultyLevel.Easy
                         1 -> TicTacToeGame.DifficultyLevel.Harder
@@ -148,7 +170,6 @@ class AndroidTicTacToeActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, levels[which], Toast.LENGTH_SHORT).show()
                     dialogInterface.dismiss()
                 }
-
                 dialog = builder.create()
             }
 
@@ -161,18 +182,16 @@ class AndroidTicTacToeActivity : AppCompatActivity() {
                     .setNegativeButton(R.string.no, null)
                 dialog = builder.create()
             }
+
+            DIALOG_ABOUT_ID -> { // Added case for About Dialog
+                val inflater = LayoutInflater.from(this)
+                val aboutView: View = inflater.inflate(R.layout.about_dialog, null) // Ensure about_dialog.xml exists
+                builder.setView(aboutView)
+                builder.setTitle(R.string.about_dialog_title) // Ensure this string exists
+                builder.setPositiveButton(android.R.string.ok, null) // Using android.R.string.ok for "OK"
+                dialog = builder.create()
+            }
         }
-
         return dialog ?: super.onCreateDialog(id)
-    }
-
-    // Optional About dialog using a custom layout
-    private fun showAboutDialog() {
-        val inflater = LayoutInflater.from(this)
-        val aboutView: View = inflater.inflate(R.layout.about_dialog, null)
-        val aboutBuilder = AlertDialog.Builder(this)
-            .setView(aboutView)
-            .setPositiveButton("OK", null)
-        aboutBuilder.create().show()
     }
 }
