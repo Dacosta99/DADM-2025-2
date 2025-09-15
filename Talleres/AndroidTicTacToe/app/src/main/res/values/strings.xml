@@ -7,4 +7,26 @@
     <string name="result_tie">It\'s a tie.</string>
     <string name="result_human_wins">You won!</string>
     <string name="result_computer_wins">Android won!</string>
+
+    <!-- Menu strings -->
+    <string name="menu_new_game">New Game</string>
+    <string name="menu_difficulty">Difficulty</string>
+    <string name="menu_quit">Quit</string>
+    <string name="menu_about">About</string>
+
+    <!-- Difficulty dialog -->
+    <string name="difficulty_choose">Choose difficulty</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_harder">Harder</string>
+    <string name="difficulty_expert">Expert</string>
+
+    <!-- Quit dialog -->
+    <string name="quit_question">Are you sure you want to quit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- About dialog -->
+    <string name="about_text">Tic-Tac-Toe
+Programmed by: Danny Yaluzan</string>
+    <string name="information_text">info</string>
 </resources>

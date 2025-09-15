@@ -10,6 +10,17 @@ class TicTacToeGame {
         const val COMPUTER_PLAYER: Char = 'O'
     }
 
+    // The computer's difficulty levels
+    enum class DifficultyLevel { Easy, Harder, Expert }
+
+    // Current difficulty level (default Expert)
+    private var mDifficultyLevel: DifficultyLevel = DifficultyLevel.Expert
+
+    fun getDifficultyLevel(): DifficultyLevel = mDifficultyLevel
+    fun setDifficultyLevel(difficultyLevel: DifficultyLevel) {
+        mDifficultyLevel = difficultyLevel
+    }
+
     private val mBoard = CharArray(BOARD_SIZE) { OPEN_SPOT }
     private val mRand = Random(System.currentTimeMillis())
 
@@ -25,36 +36,55 @@ class TicTacToeGame {
 
     fun getBoardCopy(): CharArray = mBoard.copyOf()
 
-    // Return best move for computer (0-8)
+    // Return best move for computer (0-8) based on difficulty
     fun getComputerMove(): Int {
-        // First, check if can win in next move
-        for (i in 0 until BOARD_SIZE) {
-            if (mBoard[i] == OPEN_SPOT) {
-                mBoard[i] = COMPUTER_PLAYER
-                if (checkForWinner() == 3) {
-                    mBoard[i] = OPEN_SPOT
-                    return i
-                }
-                mBoard[i] = OPEN_SPOT
+        var move = -1
+        when (mDifficultyLevel) {
+            DifficultyLevel.Easy -> move = getRandomMove()
+            DifficultyLevel.Harder -> {
+                move = getWinningMove()
+                if (move == -1) move = getRandomMove()
+            }
+            DifficultyLevel.Expert -> {
+                move = getWinningMove()
+                if (move == -1) move = getBlockingMove()
+                if (move == -1) move = getRandomMove()
             }
         }
+        return move
+    }
 
-        // Then check if human can win next and block
-        for (i in 0 until BOARD_SIZE) {
-            if (mBoard[i] == OPEN_SPOT) {
-                mBoard[i] = HUMAN_PLAYER
-                if (checkForWinner() == 2) {
-                    mBoard[i] = OPEN_SPOT
-                    return i
-                }
-                mBoard[i] = OPEN_SPOT
-            }
-        }
-
-        // Otherwise, pick random open spot
+    // Random open spot
+    private fun getRandomMove(): Int {
         val openSpots = mutableListOf<Int>()
         for (i in 0 until BOARD_SIZE) if (mBoard[i] == OPEN_SPOT) openSpots.add(i)
         return if (openSpots.isNotEmpty()) openSpots[mRand.nextInt(openSpots.size)] else -1
+    }
+
+    // Return a winning move for COMPUTER_PLAYER if exists, else -1
+    private fun getWinningMove(): Int {
+        for (i in 0 until BOARD_SIZE) {
+            if (mBoard[i] == OPEN_SPOT) {
+                mBoard[i] = COMPUTER_PLAYER
+                val winner = checkForWinner()
+                mBoard[i] = OPEN_SPOT
+                if (winner == 3) return i
+            }
+        }
+        return -1
+    }
+
+    // Return a blocking move for HUMAN_PLAYER if exists, else -1
+    private fun getBlockingMove(): Int {
+        for (i in 0 until BOARD_SIZE) {
+            if (mBoard[i] == OPEN_SPOT) {
+                mBoard[i] = HUMAN_PLAYER
+                val winner = checkForWinner()
+                mBoard[i] = OPEN_SPOT
+                if (winner == 2) return i
+            }
+        }
+        return -1
     }
 
     /*
@@ -85,9 +115,9 @@ class TicTacToeGame {
             return if (mBoard[2] == HUMAN_PLAYER) 2 else 3
         }
 
-        // If no winner and no open spots -> tie
+        // If no winner and open spots exist -> no winner yet
         for (i in 0 until BOARD_SIZE) if (mBoard[i] == OPEN_SPOT) return 0
+        // Otherwise tie
         return 1
     }
 }
-
