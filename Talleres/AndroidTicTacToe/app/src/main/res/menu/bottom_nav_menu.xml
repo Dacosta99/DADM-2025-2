@@ -2,13 +2,13 @@
     <item
         android:id="@+id/action_new_game"
         android:icon="@drawable/ic_baseline_replay_24"
-        android:title="@string/menu_new_game" />
+        android:title="@string/new_game" />
     <item
         android:id="@+id/action_difficulty"
         android:icon="@drawable/ic_baseline_settings_24"
-        android:title="@string/menu_difficulty" />
+        android:title="@string/difficulty" />
     <item
         android:id="@+id/action_quit"
         android:icon="@drawable/ic_baseline_exit_to_app_24"
-        android:title="@string/menu_quit" />
+        android:title="@string/quit" />
 </menu>

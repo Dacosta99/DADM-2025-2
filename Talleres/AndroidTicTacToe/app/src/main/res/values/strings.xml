@@ -1,44 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tic-Tac-Toe</string>
+    <string name="app_name">TicTacToe</string>
+
     <string name="first_human">You go first.</string>
     <string name="turn_human">Your turn.</string>
     <string name="turn_computer">Android\'s turn.</string>
-    <string name="result_tie">It\'s a tie.</string>
-    <string name="result_human_wins">You won!</string>
+    <string name="result_tie">It\'s a Tie!</string>
+    <string name="result_human_wins">You won!</string> <!-- Mensaje genérico de victoria -->
     <string name="result_computer_wins">Android won!</string>
 
-    <!-- Menu strings -->
-    <string name="menu_new_game">New Game</string>
-    <string name="menu_difficulty">Difficulty</string>
-    <string name="menu_quit">Quit</string>
-    <string name="menu_about">About</string>
-
-    <!-- Difficulty dialog -->
-    <string name="difficulty_choose">Choose difficulty</string>
+    <string name="difficulty_choose">Choose a difficulty level</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_harder">Harder</string>
     <string name="difficulty_expert">Expert</string>
 
-    <!-- Quit dialog -->
     <string name="quit_question">Are you sure you want to quit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <!-- About dialog -->
-    <string name="about_text">Tic-Tac-Toe
-Programmed by: Danny Yaluzan</string>
-    <string name="about_dialog_title">About</string>
-    <string name="information_text">info</string>
+    <string name="menu_about">About</string>
+    <string name="about_dialog_title">About Tic-Tac-Toe</string>
+    <string name="about_text">Tic-Tac-Toe\nProgrammed by: Danny Marcelo Yaluzan Acosta</string> <!-- ¡Personaliza esto! -->
+    <string name="information_text">Game Information</string>
 
-    <!-- Content descriptions for game board cells -->
-    <string name="cell_1_description">Casilla 1</string>
-    <string name="cell_2_description">Casilla 2</string>
-    <string name="cell_3_description">Casilla 3</string>
-    <string name="cell_4_description">Casilla 4</string>
-    <string name="cell_5_description">Casilla 5</string>
-    <string name="cell_6_description">Casilla 6</string>
-    <string name="cell_7_description">Casilla 7</string>
-    <string name="cell_8_description">Casilla 8</string>
-    <string name="cell_9_description">Casilla 9</string>
+    <!-- Content descriptions for accessibility -->
+    <string name="cell_1_description">Cell 1</string>
+    <string name="cell_2_description">Cell 2</string>
+    <string name="cell_3_description">Cell 3</string>
+    <string name="cell_4_description">Cell 4</string>
+    <string name="cell_5_description">Cell 5</string>
+    <string name="cell_6_description">Cell 6</string>
+    <string name="cell_7_description">Cell 7</string>
+    <string name="cell_8_description">Cell 8</string>
+    <string name="cell_9_description">Cell 9</string>
+
+    <string name="new_game">New Game</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="quit">Quit</string>
+
 </resources>

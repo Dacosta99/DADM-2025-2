@@ -28,11 +28,24 @@ class TicTacToeGame {
         for (i in 0 until BOARD_SIZE) mBoard[i] = OPEN_SPOT
     }
 
-    fun setMove(player: Char, location: Int) {
+    // Modified to return Boolean
+    fun setMove(player: Char, location: Int): Boolean {
         if (location in 0 until BOARD_SIZE && mBoard[location] == OPEN_SPOT) {
             mBoard[location] = player
+            return true // Move was successful
+        }
+        return false // Move was not successful
+    }
+
+    // New function added
+    fun getBoardOccupant(location: Int): Char {
+        return if (location in 0 until BOARD_SIZE) {
+            mBoard[location]
+        } else {
+            OPEN_SPOT // Should not happen with current BoardView logic but good for safety
         }
     }
+
 
     fun getBoardCopy(): CharArray = mBoard.copyOf()
 
@@ -119,5 +132,9 @@ class TicTacToeGame {
         for (i in 0 until BOARD_SIZE) if (mBoard[i] == OPEN_SPOT) return 0
         // Otherwise tie
         return 1
+    }
+
+    fun isGameOver(): Boolean {
+        return checkForWinner() != 0
     }
 }
