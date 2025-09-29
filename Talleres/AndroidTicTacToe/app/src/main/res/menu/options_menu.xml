@@ -6,4 +6,8 @@
         android:title="@string/menu_about"
         android:icon="@drawable/ic_baseline_help_outline_24"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_reset_scores"
+        android:title="Reset Scores"
+        app:showAsAction="never" />
 </menu>

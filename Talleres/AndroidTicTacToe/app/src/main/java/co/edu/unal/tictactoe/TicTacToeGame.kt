@@ -21,35 +21,39 @@ class TicTacToeGame {
         mDifficultyLevel = difficultyLevel
     }
 
-    private val mBoard = CharArray(BOARD_SIZE) { OPEN_SPOT }
+    private var mBoard = CharArray(BOARD_SIZE) { OPEN_SPOT } // mBoard ahora es var
     private val mRand = Random(System.currentTimeMillis())
 
     fun clearBoard() {
         for (i in 0 until BOARD_SIZE) mBoard[i] = OPEN_SPOT
     }
 
-    // Modified to return Boolean
     fun setMove(player: Char, location: Int): Boolean {
         if (location in 0 until BOARD_SIZE && mBoard[location] == OPEN_SPOT) {
             mBoard[location] = player
-            return true // Move was successful
+            return true
         }
-        return false // Move was not successful
+        return false
     }
 
-    // New function added
     fun getBoardOccupant(location: Int): Char {
         return if (location in 0 until BOARD_SIZE) {
             mBoard[location]
         } else {
-            OPEN_SPOT // Should not happen with current BoardView logic but good for safety
+            OPEN_SPOT
         }
     }
 
+    // Renombrado de getBoardCopy a getBoardState para consistencia con los requisitos
+    fun getBoardState(): CharArray = mBoard.copyOf()
 
-    fun getBoardCopy(): CharArray = mBoard.copyOf()
+    fun setBoardState(state: CharArray) {
+        if (state.size == BOARD_SIZE) {
+            mBoard = state.copyOf() // Asegurar que se copia el estado
+        }
+        // Podrías añadir un log o manejo de error si state.size != BOARD_SIZE
+    }
 
-    // Return best move for computer (0-8) based on difficulty
     fun getComputerMove(): Int {
         var move = -1
         when (mDifficultyLevel) {
@@ -67,14 +71,12 @@ class TicTacToeGame {
         return move
     }
 
-    // Random open spot
     private fun getRandomMove(): Int {
         val openSpots = mutableListOf<Int>()
         for (i in 0 until BOARD_SIZE) if (mBoard[i] == OPEN_SPOT) openSpots.add(i)
         return if (openSpots.isNotEmpty()) openSpots[mRand.nextInt(openSpots.size)] else -1
     }
 
-    // Return a winning move for COMPUTER_PLAYER if exists, else -1
     private fun getWinningMove(): Int {
         for (i in 0 until BOARD_SIZE) {
             if (mBoard[i] == OPEN_SPOT) {
@@ -87,7 +89,6 @@ class TicTacToeGame {
         return -1
     }
 
-    // Return a blocking move for HUMAN_PLAYER if exists, else -1
     private fun getBlockingMove(): Int {
         for (i in 0 until BOARD_SIZE) {
             if (mBoard[i] == OPEN_SPOT) {
@@ -100,37 +101,24 @@ class TicTacToeGame {
         return -1
     }
 
-    /*
-    checkForWinner():
-      0 -> no winner yet
-      1 -> tie
-      2 -> X won (human)
-      3 -> O won (computer)
-    */
     fun checkForWinner(): Int {
-        // Check rows
         for (i in 0..6 step 3) {
             if (mBoard[i] == mBoard[i + 1] && mBoard[i + 1] == mBoard[i + 2] && mBoard[i] != OPEN_SPOT) {
                 return if (mBoard[i] == HUMAN_PLAYER) 2 else 3
             }
         }
-        // Check cols
         for (i in 0..2) {
             if (mBoard[i] == mBoard[i + 3] && mBoard[i + 3] == mBoard[i + 6] && mBoard[i] != OPEN_SPOT) {
                 return if (mBoard[i] == HUMAN_PLAYER) 2 else 3
             }
         }
-        // Diagonals
         if (mBoard[0] == mBoard[4] && mBoard[4] == mBoard[8] && mBoard[0] != OPEN_SPOT) {
             return if (mBoard[0] == HUMAN_PLAYER) 2 else 3
         }
         if (mBoard[2] == mBoard[4] && mBoard[4] == mBoard[6] && mBoard[2] != OPEN_SPOT) {
             return if (mBoard[2] == HUMAN_PLAYER) 2 else 3
         }
-
-        // If no winner and open spots exist -> no winner yet
         for (i in 0 until BOARD_SIZE) if (mBoard[i] == OPEN_SPOT) return 0
-        // Otherwise tie
         return 1
     }
 
