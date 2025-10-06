@@ -28,7 +28,7 @@ class BoardView @JvmOverloads constructor(
     private var mListener: BoardTouchListener? = null
 
     interface BoardTouchListener {
-        fun onMoveMade()
+        fun onBoardTouched(location: Int)
     }
 
     init {
@@ -126,27 +126,20 @@ class BoardView @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mGame ?: return false
-        if (mGame!!.isGameOver()) return false // Check if game is over before processing touch
+        if (mGame!!.isGameOver()) return false
 
         if (event.action == MotionEvent.ACTION_DOWN) {
             val x = event.x.toInt()
             val y = event.y.toInt()
 
-            // Check if touch is within the board boundaries
             if (mBoardRect.contains(x,y)) {
                 val col = (x - mBoardRect.left) / mCellWidth
                 val row = (y - mBoardRect.top) / mCellHeight
 
-                // Ensure col and row are within 0-2 range
                 if (col in 0..2 && row in 0..2) {
                     val location = row * 3 + col
-                    if (mGame!!.getBoardOccupant(location) == TicTacToeGame.OPEN_SPOT) {
-                        if (mGame!!.setMove(TicTacToeGame.HUMAN_PLAYER, location)) {
-                            invalidate() // Redraw the board
-                            mListener?.onMoveMade()
-                            return true
-                        }
-                    }
+                    mListener?.onBoardTouched(location)
+                    return true
                 }
             }
         }

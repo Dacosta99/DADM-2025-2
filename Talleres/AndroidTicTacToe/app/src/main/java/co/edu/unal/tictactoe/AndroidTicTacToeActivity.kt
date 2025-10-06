@@ -42,7 +42,6 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
     private var mComputerTurnRunnable: Runnable? = null // Para cancelar el postDelayed
 
     private var mCurrentTurn = TicTacToeGame.HUMAN_PLAYER // H para Humano, C para Computadora
-    private var mProcessingComputerTurn = false // Para evitar movimientos mientras la CPU piensa
 
     private lateinit var mPrefs: SharedPreferences
 
@@ -62,10 +61,7 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
         mBoardView = findViewById(R.id.board_view)
         mInfoTextView = findViewById(R.id.information)
 
-        // Inicializar TextViews de puntajes (pueden no existir en layout portrait)
-        // Es mejor verificar si existen antes de usarlos para evitar NullPointerExceptions
-        // si el layout actual no los tiene (ej. portrait vs landscape)
-        mHumanScoreTextView = findViewById(R.id.human_score) ?: TextView(this) // Fallback si no existe
+        mHumanScoreTextView = findViewById(R.id.human_score) ?: TextView(this)
         mComputerScoreTextView = findViewById(R.id.computer_score) ?: TextView(this)
         mTiesScoreTextView = findViewById(R.id.ties_score) ?: TextView(this)
 
@@ -80,7 +76,7 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.action_new_game -> {
-                    startNewGame(true) // true para indicar que es un nuevo juego iniciado por el usuario
+                    startNewGame()
                     true
                 }
                 R.id.action_difficulty -> {
@@ -98,7 +94,6 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
         }
 
         mPrefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        // Recuperar puntajes y dificultad persistidos
         mHumanWins = mPrefs.getInt("mHumanWins", 0)
         mComputerWins = mPrefs.getInt("mComputerWins", 0)
         mTies = mPrefs.getInt("mTies", 0)
@@ -106,96 +101,66 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
         mGame.setDifficultyLevel(TicTacToeGame.DifficultyLevel.values()[difficultyOrdinal])
 
         if (savedInstanceState != null) {
-            // Restaurar estado de la instancia (rotación)
             mGame.setBoardState(savedInstanceState.getCharArray("board") ?: CharArray(TicTacToeGame.BOARD_SIZE))
             mGameOver = savedInstanceState.getBoolean("mGameOver")
             mInfoTextView.text = savedInstanceState.getString("info")
-            // Los puntajes se restauran directamente del Bundle, no de SharedPreferences aquí,
-            // para reflejar el estado exacto *antes* de la rotación, no el último guardado en onStop.
             mHumanWins = savedInstanceState.getInt("mHumanWins")
             mComputerWins = savedInstanceState.getInt("mComputerWins")
             mTies = savedInstanceState.getInt("mTies")
             mCurrentTurn = savedInstanceState.getChar("currentTurn", TicTacToeGame.HUMAN_PLAYER)
-            // La dificultad ya fue restaurada de mPrefs, pero el Bundle tiene prioridad si existe
             val savedDifficultyOrdinal = savedInstanceState.getInt("difficulty", mGame.getDifficultyLevel().ordinal)
             mGame.setDifficultyLevel(TicTacToeGame.DifficultyLevel.values()[savedDifficultyOrdinal])
 
-            mBoardView.invalidate() // Actualizar el tablero visualmente
-            if (!mGameOver && mCurrentTurn == TicTacToeGame.COMPUTER_PLAYER && !mProcessingComputerTurn) {
-                // Si era turno de la CPU y no se estaba procesando, forzar jugada
-                // El mensaje de "Turno de Android" ya debería estar si fue guardado
-                mProcessingComputerTurn = true
+            mBoardView.invalidate()
+            if (!mGameOver && mCurrentTurn == TicTacToeGame.COMPUTER_PLAYER) {
+                mBoardView.isEnabled = false
                 scheduleComputerMove()
             }
         } else {
-            // Si no hay estado guardado (primera ejecución o después de cerrar), iniciar nuevo juego
-            startNewGame(false) // false para no resetear puntajes de SharedPreferences
+            startNewGame()
         }
         displayScores()
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d("TicTacToeActivity", "onResume: Intentando inicializar MediaPlayers.")
         try {
-            // Usando los nombres de archivo correctos que especificaste
             mHumanMediaPlayer = MediaPlayer.create(applicationContext, R.raw.soundx)
             mComputerMediaPlayer = MediaPlayer.create(applicationContext, R.raw.soundo)
-
-            if (mHumanMediaPlayer == null) {
-                Log.e("TicTacToeActivity", "onResume: Falló la creación de mHumanMediaPlayer (R.raw.soundx). Revisa que el archivo exista en res/raw y no esté corrupto.")
-            } else {
-                Log.d("TicTacToeActivity", "onResume: mHumanMediaPlayer (R.raw.soundx) creado exitosamente.")
-                mHumanMediaPlayer?.setOnErrorListener { mp, what, extra ->
-                    Log.e("TicTacToeActivity", "Error en mHumanMediaPlayer: what=$what, extra=$extra")
-                    true // true si el error fue manejado
-                }
-            }
-
-            if (mComputerMediaPlayer == null) {
-                Log.e("TicTacToeActivity", "onResume: Falló la creación de mComputerMediaPlayer (R.raw.soundo). Revisa que el archivo exista en res/raw y no esté corrupto.")
-            } else {
-                Log.d("TicTacToeActivity", "onResume: mComputerMediaPlayer (R.raw.soundo) creado exitosamente.")
-                mComputerMediaPlayer?.setOnErrorListener { mp, what, extra ->
-                    Log.e("TicTacToeActivity", "Error en mComputerMediaPlayer: what=$what, extra=$extra")
-                    true // true si el error fue manejado
-                }
-            }
         } catch (e: Exception) {
-            Log.e("TicTacToeActivity", "onResume: Excepción al crear MediaPlayers: ${e.message}", e)
-            // mHumanMediaPlayer y mComputerMediaPlayer permanecerán null si hay una excepción
+            Log.e("TicTacToeActivity", "Error creating MediaPlayers", e)
         }
     }
 
-    private fun startNewGame(resetScoresFromMenuOrNewGameButton: Boolean) {
-        mHandler.removeCallbacksAndMessages(null) // Cancelar cualquier postDelayed pendiente
-        mProcessingComputerTurn = false
+    private fun startNewGame() {
+        mHandler.removeCallbacksAndMessages(null)
         mGame.clearBoard()
         mBoardView.invalidate()
+        mBoardView.isEnabled = true
         mGameOver = false
         mCurrentTurn = TicTacToeGame.HUMAN_PLAYER
         mInfoTextView.text = getString(R.string.first_human)
-        if (resetScoresFromMenuOrNewGameButton) {
-             // No reseteamos los contadores mHumanWins, etc. aquí, ya que se leen de SharedPreferences
-             // o se manejan con el botón Reset Scores.
-        }
-        displayScores() // Asegurar que los puntajes (posiblemente de SharedPreferences) se muestren
+        displayScores()
     }
 
-    override fun onMoveMade() {
-        if (mProcessingComputerTurn || mGameOver || mCurrentTurn == TicTacToeGame.COMPUTER_PLAYER) return
+    override fun onBoardTouched(location: Int) {
+        if (mCurrentTurn != TicTacToeGame.HUMAN_PLAYER || mGameOver) {
+            return
+        }
 
-        mHumanMediaPlayer?.start()
-        var winner = mGame.checkForWinner()
-        mCurrentTurn = TicTacToeGame.COMPUTER_PLAYER // Turno de la CPU después del humano
+        if (mGame.setMove(TicTacToeGame.HUMAN_PLAYER, location)) {
+            mCurrentTurn = TicTacToeGame.COMPUTER_PLAYER
+            mBoardView.invalidate()
+            mHumanMediaPlayer?.start()
 
-        if (winner == 0) {
-            mInfoTextView.text = getString(R.string.turn_computer)
-            mProcessingComputerTurn = true
-            scheduleComputerMove()
-        } else {
-            handleEndOfTurn(winner)
-            mCurrentTurn = TicTacToeGame.HUMAN_PLAYER // El juego terminó, el turno vuelve a ser del humano para el próximo juego
+            val winner = mGame.checkForWinner()
+            if (winner == 0) {
+                mInfoTextView.text = getString(R.string.turn_computer)
+                mBoardView.isEnabled = false
+                scheduleComputerMove()
+            } else {
+                handleEndOfTurn(winner)
+            }
         }
     }
 
@@ -213,17 +178,17 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
                 if (!mGameOver) {
                     mCurrentTurn = TicTacToeGame.HUMAN_PLAYER
                     mInfoTextView.text = getString(R.string.turn_human)
+                    mBoardView.isEnabled = true
                 }
             }
-            mProcessingComputerTurn = false
-            mComputerTurnRunnable = null // Limpiar runnable
+            mComputerTurnRunnable = null
         }
         mHandler.postDelayed(mComputerTurnRunnable!!, 1000L)
     }
 
     private fun handleEndOfTurn(winner: Int) {
         when (winner) {
-            0 -> { /* No hacer nada aquí, el turno se gestiona en onMoveMade/scheduleComputerMove */ }
+            0 -> return
             1 -> {
                 mInfoTextView.text = getString(R.string.result_tie)
                 mTies++
@@ -244,15 +209,13 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
         displayScores()
 
         if (mGameOver) {
+            mBoardView.isEnabled = false
             mBoardView.invalidate()
-            mCurrentTurn = TicTacToeGame.HUMAN_PLAYER // Listo para el próximo juego
-            mProcessingComputerTurn = false // Detener cualquier procesamiento de la CPU
-            mHandler.removeCallbacksAndMessages(null) // Cancelar postDelayed si el juego termina
+            mHandler.removeCallbacksAndMessages(null)
         }
     }
 
     private fun displayScores() {
-        // Verificar si los TextViews de puntaje están disponibles (p.ej. en layout landscape)
         if (::mHumanScoreTextView.isInitialized && mHumanScoreTextView.parent != null) {
             mHumanScoreTextView.text = mHumanWins.toString()
         }
@@ -278,7 +241,6 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
 
     override fun onStop() {
         super.onStop()
-        // Guardar puntajes y dificultad en SharedPreferences
         val editor = mPrefs.edit()
         editor.putInt("mHumanWins", mHumanWins)
         editor.putInt("mComputerWins", mComputerWins)
@@ -286,48 +248,19 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
         editor.putInt("difficulty", mGame.getDifficultyLevel().ordinal)
         editor.apply()
     }
-    
+
     override fun onPause() {
         super.onPause()
-        Log.d("TicTacToeActivity", "onPause: Liberando MediaPlayers.")
-        try {
-            mHumanMediaPlayer?.release()
-            mComputerMediaPlayer?.release()
-        } catch (e: IllegalStateException) {
-            Log.e("TicTacToeActivity", "onPause: IllegalStateException al liberar MediaPlayers: ${e.message}", e)
-        } catch (e: Exception) {
-            Log.e("TicTacToeActivity", "onPause: Excepción general al liberar MediaPlayers: ${e.message}", e)
-        } finally {
-            mHumanMediaPlayer = null
-            mComputerMediaPlayer = null
-        }
-
-        // Cancelar el runnable de la CPU si está pendiente para evitar que se ejecute mientras la actividad está pausada
-        mComputerTurnRunnable?.let {
-            mHandler.removeCallbacks(it)
-            Log.d("TicTacToeActivity", "onPause: Callbacks para mComputerTurnRunnable eliminados.")
-        }
+        mHumanMediaPlayer?.release()
+        mComputerMediaPlayer?.release()
+        mComputerTurnRunnable?.let { mHandler.removeCallbacks(it) }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("TicTacToeActivity", "onDestroy: Liberación final de MediaPlayers y limpieza del Handler.")
-        try {
-            // Aseguramos la liberación por si onPause no se ejecutó o falló
-            mHumanMediaPlayer?.release()
-            mComputerMediaPlayer?.release()
-        } catch (e: IllegalStateException) {
-            Log.e("TicTacToeActivity", "onDestroy: IllegalStateException en liberación final de MediaPlayers: ${e.message}", e)
-        } catch (e: Exception) {
-            Log.e("TicTacToeActivity", "onDestroy: Excepción general en liberación final de MediaPlayers: ${e.message}", e)
-        } finally {
-            mHumanMediaPlayer = null
-            mComputerMediaPlayer = null
-        }
-        
-        // Esta parte es importante para los Handlers, la mantenemos
+        mHumanMediaPlayer?.release()
+        mComputerMediaPlayer?.release()
         mHandler.removeCallbacksAndMessages(null)
-        Log.d("TicTacToeActivity", "onDestroy: Todos los callbacks y mensajes del Handler eliminados.")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -348,21 +281,18 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
                 mComputerWins = 0
                 mTies = 0
                 displayScores()
-                // Actualizar SharedPreferences también
                 val editor = mPrefs.edit()
                 editor.putInt("mHumanWins", mHumanWins)
                 editor.putInt("mComputerWins", mComputerWins)
                 editor.putInt("mTies", mTies)
                 editor.apply()
-                // Opcional: Iniciar un nuevo juego después de resetear puntajes
-                // startNewGame(false)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
-    @Deprecated("Deprecated in Java. Using for consistency with original tutorial structure.")
+    @Deprecated("Deprecated in Java")
     override fun onCreateDialog(id: Int): Dialog {
         var dialog: Dialog? = null
         val builder = AlertDialog.Builder(this)
@@ -376,11 +306,10 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
 
                 builder.setSingleChoiceItems(levelStrings, selected) { dialogInterface, which ->
                     mGame.setDifficultyLevel(levels[which])
-                    // Guardar nueva dificultad inmediatamente en SharedPreferences
                     mPrefs.edit().putInt("difficulty", mGame.getDifficultyLevel().ordinal).apply()
                     Toast.makeText(applicationContext, levelStrings[which], Toast.LENGTH_SHORT).show()
                     dialogInterface.dismiss()
-                    startNewGame(false) // No resetear puntajes al cambiar dificultad
+                    startNewGame()
                 }
                 dialog = builder.create()
             }
@@ -396,7 +325,7 @@ class AndroidTicTacToeActivity : AppCompatActivity(), BoardView.BoardTouchListen
                 val aboutView: View = LayoutInflater.from(this).inflate(R.layout.about_dialog, null)
                 builder.setView(aboutView)
                 builder.setTitle(R.string.about_dialog_title)
-                builder.setPositiveButton(android.R.string.ok, null)
+                builder.setPositiveButton("OK", null)
                 dialog = builder.create()
             }
         }
