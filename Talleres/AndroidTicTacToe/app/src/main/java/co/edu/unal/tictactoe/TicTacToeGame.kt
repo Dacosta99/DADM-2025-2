@@ -4,7 +4,8 @@ import kotlin.random.Random
 
 class TicTacToeGame {
     companion object {
-        const val BOARD_SIZE = 9
+        const val BOARD_SIZE_SIDE = 3
+        const val BOARD_SIZE = BOARD_SIZE_SIDE * BOARD_SIZE_SIDE
         const val OPEN_SPOT: Char = ' '
         const val HUMAN_PLAYER: Char = 'X'
         const val COMPUTER_PLAYER: Char = 'O'
