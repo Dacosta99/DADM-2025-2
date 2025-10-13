@@ -21,6 +21,10 @@
         <activity
             android:name=".AndroidTicTacToeActivity"
             android:exported="false"/>
+        
+        <activity
+            android:name=".LobbyActivity"
+            android:exported="false"/>
 
     </application>
 

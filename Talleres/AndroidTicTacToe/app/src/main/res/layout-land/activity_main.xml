@@ -2,8 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/background_light">
 
+    <!-- Toolbar superior -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -11,98 +13,182 @@
         android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
         app:titleTextColor="@android:color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:visibility="gone" /> <!-- Toolbar oculta -->
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <!-- Contenedor principal horizontal -->
     <LinearLayout
-        android:id="@+id/main_content_area"
+        android:id="@+id/game_content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/toolbar"
         android:layout_above="@id/bottom_navigation"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:gravity="center"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        android:baselineAligned="false">
 
-        <!-- BoardView a la izquierda -->
-        <co.edu.unal.tictactoe.BoardView
-            android:id="@+id/board_view"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp" />
-
-        <!-- Panel de información y puntajes a la derecha -->
-        <LinearLayout
-            android:id="@+id/info_panel"
+        <!-- IZQUIERDA: Tablero -->
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center">
 
+            <co.edu.unal.tictactoe.BoardView
+                android:id="@+id/board_view"
+                android:layout_width="320dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <!-- SEPARADOR visual -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="24dp"
+            android:background="@android:color/darker_gray" />
+
+        <!-- DERECHA: Puntajes e información -->
+        <LinearLayout
+            android:id="@+id/score_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="8dp">
+
+            <!-- Título del panel -->
+            <TextView
+                android:id="@+id/score_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Marcador"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"
+                android:textColor="@android:color/black" />
+
+            <!-- Fila con los tres marcadores -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="24dp">
+
+                    <TextView
+                        android:id="@+id/player1_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Player X"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/player1_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/holo_blue_dark" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="24dp">
+
+                    <TextView
+                        android:id="@+id/ties_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ties"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/ties_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/holo_orange_dark" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/player2_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Player O"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/player2_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/holo_red_dark" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Mensaje de estado del juego -->
             <TextView
                 android:id="@+id/information"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
                 android:text="@string/information_text"
-                android:textSize="20sp" />
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center_horizontal" />
 
+            <!-- Código del juego -->
             <TextView
-                android:id="@+id/human_score_label"
+                android:id="@+id/game_code_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Human:"
-                android:textSize="18sp" />
+                android:text="Código del juego: ----"
+                android:textSize="16sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal" />
 
-            <TextView
-                android:id="@+id/human_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="0"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/computer_score_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Android:"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/computer_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="0"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/ties_score_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ties:"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/ties_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Barra de navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"
+        android:visibility="gone" />
 
 </RelativeLayout>

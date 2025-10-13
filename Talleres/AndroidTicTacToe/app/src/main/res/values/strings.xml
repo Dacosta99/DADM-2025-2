@@ -13,6 +13,12 @@
     <string name="difficulty_harder">Harder</string>
     <string name="difficulty_expert">Expert</string>
 
+    <string-array name="difficulty_levels">
+        <item>@string/difficulty_easy</item>
+        <item>@string/difficulty_harder</item>
+        <item>@string/difficulty_expert</item>
+    </string-array>
+
     <string name="quit_question">Are you sure you want to quit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

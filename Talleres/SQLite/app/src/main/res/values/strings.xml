@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Directorio Software</string>
+    <string name="add_company">Agregar empresa</string>
+    <string name="save">Guardar</string>
+</resources>

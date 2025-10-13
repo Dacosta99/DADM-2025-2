@@ -14,9 +14,15 @@ class StartActivity : AppCompatActivity() {
         val offlineButton: Button = findViewById(R.id.button_offline)
         offlineButton.setOnClickListener {
             val intent = Intent(this, AndroidTicTacToeActivity::class.java)
+            // Add a flag to ensure the game activity runs in offline mode
+            intent.putExtra("isOnline", false)
             startActivity(intent)
         }
 
-        // The online button does nothing for now
+        val onlineButton: Button = findViewById(R.id.button_online)
+        onlineButton.setOnClickListener {
+            val intent = Intent(this, LobbyActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
