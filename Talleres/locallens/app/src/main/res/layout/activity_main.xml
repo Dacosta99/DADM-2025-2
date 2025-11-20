@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="56dp"
+        android:padding="8dp" android:background="?attr/colorSurface" android:elevation="4dp">
+        <EditText android:id="@+id/edtAddress" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:hint="Dirección o dejar vacío para ubicación actual" android:imeOptions="actionSearch"/>
+        <ImageButton android:id="@+id/btnSearch" android:layout_width="48dp" android:layout_height="match_parent" android:src="@android:drawable/ic_menu_search" android:contentDescription="Buscar"/>
+    </LinearLayout>
+
+    <org.osmdroid.views.MapView android:id="@+id/map" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="56dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/fabSettings" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@android:drawable/ic_menu_manage" android:layout_gravity="bottom|end" android:layout_margin="16dp"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
